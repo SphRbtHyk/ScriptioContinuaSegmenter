@@ -1,0 +1,41 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.metadata]
+allow-direct-references = true
+
+[tool.hatch.build.targets.wheel]
+packages = [
+  "src/sc_segmenter",
+]
+
+[tool.hatch.build]
+include = [
+  "data/**"
+]
+
+[project]
+name = "SC_segmenter"
+version = "1.0.0"
+dependencies = [
+]
+requires-python = ">=3.11"
+maintainers = [
+  {name = "Sophie Robert-Hayek", email = "sophie.robert@sorbonne-universite.fr"},
+]
+description="Implements tools for the segmentation of Scriptio Continua manuscripts."
+readme = "README.md"
+license = "MIT"
+classifiers = [
+  "Development Status :: 4 - Beta",
+]
+
+[project.optional-dependencies]
+dev = [
+  "flake8>=7.2.0",
+  "pytest>=8.3.5"
+]
+
+[project.scripts]
+
