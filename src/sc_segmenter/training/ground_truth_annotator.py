@@ -55,7 +55,7 @@ def quadrimodal_annotation(input_string: str) -> list[str]:
 
 def annotate_dict(input_dict: dict[str, dict[str, dict[str, str]]],
                   annotation_scheme: str = "binary") -> \
-        list[tuple[str, list[str]]]:
+        list[tuple[str, list[str], str]]:
     """Perform the annotation of an input dictionary.
 
     Args:
@@ -65,7 +65,8 @@ def annotate_dict(input_dict: dict[str, dict[str, dict[str, str]]],
 
     Returns:
         list[tuple[str, list[str]]]: The list of the strings and their
-            annotations as a list of tuple.
+            annotations as a list of tuple. The spaces will be removed
+            as they are indicated in the label.
     """
     if annotation_scheme == "binary":
         annotation_fun = binary_annotation
@@ -79,7 +80,8 @@ def annotate_dict(input_dict: dict[str, dict[str, dict[str, str]]],
         for _, chapter_content in book_content.items():
             for _, verse_content in chapter_content.items():
                 annotations.append((
-                    verse_content,
-                    annotation_fun(verse_content))
+                    verse_content.replace(" ", "").lower(),
+                    annotation_fun(verse_content),
+                    verse_content)
                 )
     return annotations

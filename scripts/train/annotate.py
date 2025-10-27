@@ -5,7 +5,9 @@ import json
 from sc_segmenter.training.ground_truth_annotator import annotate_dict
 
 # Files to annotate
-FILES_TO_ANNOTATE = ["data/raw_data/sblgnt.json", "data/raw_data/vulgata.json"]
+FILES_TO_ANNOTATE = ["data/raw_data/sblgnt.json",
+                     "data/raw_data/vulgata.json",
+                     "data/raw_data/seals.json"]
 
 # Methods of annotation
 ANNOTATION_METHOD = ["binary", "quadrimodal"]
@@ -20,4 +22,4 @@ for file in FILES_TO_ANNOTATE:
                                        annotation_scheme=method)
         with open(f"data/ground_truth/{Path(file).stem}_{method}.txt", "w") as f:
             for line in annotated_data:
-                f.write(f"{line}\n")
+                f.write(f"{line[0]} - {line[1]} - {line[2]}\n")

@@ -41,13 +41,13 @@ class TestAnnotator(unittest.TestCase):
             }}
         self.assertEqual(
             annotate_dict(test_data, annotation_scheme="binary"),
-            [('ceci est un test',
+            [('ceciestuntest',
               ['I', 'I', 'I', 'E', 'I', 'I', 'E',
                'I', 'E', 'I', 'I', 'I', 'E']),
-             ('test aussi',
+             ('testaussi',
               ['I', 'I', 'I', 'E', 'I',
                'I', 'I', 'I', 'E']),
-             ('ceci est un test',
+             ('ceciestuntest',
               ['I', 'I', 'I', 'E', 'I', 'I', 'E',
                'I', 'E', 'I', 'I', 'I', 'E'])]
         )
@@ -67,13 +67,13 @@ class TestAnnotator(unittest.TestCase):
         self.assertEqual(
             annotate_dict(test_data,
                           annotation_scheme="quadrimodal"),
-            [('ceci est un test',
+            [('ceciestuntest',
               ['B', 'I', 'I', 'E', 'B', 'I', 'E',
                'B', 'E', 'B', 'I', 'I', 'E']),
-             ('test aussi',
+             ('testaussi',
               ['B', 'I', 'I', 'E', 'B',
                'I', 'I', 'I', 'E']),
-             ('ceci est un test',
+             ('ceciestuntest',
               ['B', 'I', 'I', 'E', 'B', 'I',
                'E', 'B', 'E', 'B', 'I', 'I', 'E'])]
         )

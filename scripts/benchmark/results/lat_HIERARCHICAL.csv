@@ -1,0 +1,13 @@
+,0
+boundary_accuracy,0.9274531024531025
+boundary_precision,0.8818686868686869
+boundary_recall,0.9274531024531025
+boundary_f1,0.9029929620751123
+word_precision,0.8036752136752137
+word_recall,0.8395604395604396
+word_f1,0.820484345257485
+sequence_accuracy,0.5582905982905983
+expected_words,12.5
+predicted_words,13.3
+correct_words,10.0
+exact_position_matches,6.4

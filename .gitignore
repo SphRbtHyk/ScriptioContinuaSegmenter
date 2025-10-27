@@ -205,3 +205,15 @@ cython_debug/
 marimo/_static/
 marimo/_lsp/
 __marimo__/
+
+# Do not upload any dataset related to the seals
+*seals*
+
+# DO not upload models
+model
+
+# Do not upload notebooks
+notebooks
+
+# Do not upload logs
+*out

@@ -19,6 +19,20 @@ def remove_diacritics(text: str) -> str:
                    if ud.category(c) != 'Mn')
 
 
+def clean_up(text: str, symbols: list[str] = ["'", "’"]) -> str:
+    """Clean up the input text by removing unwanted symbols.
+
+    Args:
+        text (str): Text to clean up.
+        symbols (list[str], optional): The list of symbols to strip from
+            the dataset. Defaults to [''].
+
+    Returns:
+        str: The cleaned up text.
+    """
+    return ''.join(c for c in text if c not in symbols)
+
+
 def load_sbglnt_verses(input_folder: str = "sblgnt/"):
     """
     Load the SBLGNT JSON files into a list of Python dictionary on
@@ -48,11 +62,11 @@ def load_sbglnt_verses(input_folder: str = "sblgnt/"):
                     text[chapter_ix] = {}
                 # Else, fill it with content
                 try:
-                    text[chapter_ix][verse_ix] += remove_diacritics(
-                        parsed_text[-1]) + " "
+                    text[chapter_ix][verse_ix] += clean_up(remove_diacritics(
+                        parsed_text[4])) + " "
                 except KeyError:
                     text[chapter_ix][verse_ix] = \
-                        remove_diacritics(parsed_text[-1]) + " "
+                        clean_up(remove_diacritics(parsed_text[4])) + " "
         json_output[book] = text
     return json_output
 
