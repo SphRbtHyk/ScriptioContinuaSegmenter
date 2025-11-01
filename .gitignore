@@ -217,3 +217,5 @@ notebooks
 
 # Do not upload logs
 *out
+
+trainer_output/

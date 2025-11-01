@@ -53,9 +53,6 @@ class BayesianSegmenter(Segmenter):
                                  theta_beta=theta_beta)
 
     def segment(self, text: str) -> list[str]:
-        print("Segment to predict")
-        print(text)
-        print(self.model.predict_segments([text]))
         return self.model.predict_segments([text])[0][0]
 
     def train(self,

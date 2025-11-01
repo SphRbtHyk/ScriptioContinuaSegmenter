@@ -10,7 +10,6 @@ from transformers import (
 )
 from torch.utils.data import Dataset
 from typing import List
-import os
 from tqdm import tqdm
 
 
@@ -98,7 +97,7 @@ def fine_tune_xglm(
     learning_rate: float = 5e-5,
     num_epochs: int = 3,
     warmup_steps: int = 100,
-    save_steps: int = 500,
+    save_steps: int = 100,
     logging_steps: int = 50
 ):
     """
@@ -172,30 +171,17 @@ def fine_tune_xglm(
 
     # Training arguments
     training_args = TrainingArguments(
-        #max_steps=1000,
-        output_dir=output_dir,
-        overwrite_output_dir=True,
-        num_train_epochs=num_epochs,
-        per_device_train_batch_size=batch_size,
-        per_device_eval_batch_size=batch_size,
-        gradient_accumulation_steps=gradient_accumulation_steps,
-        learning_rate=learning_rate,
-        warmup_steps=warmup_steps,
-        weight_decay=0.01,
-        logging_dir=f"{output_dir}/logs",
-        logging_steps=logging_steps,
-        eval_strategy="steps",
-        eval_steps=save_steps,
-        save_steps=save_steps,
-        save_total_limit=2,
-        load_best_model_at_end=True,
-        metric_for_best_model="eval_loss",
-        greater_is_better=False,
-        prediction_loss_only=True,
+        max_steps=1500,
+        eval_steps=50,   # Évaluer toutes les 50 steps
+        save_steps=100,
+        logging_steps=30,
+        per_device_train_batch_size=2,  # Réduire le batch size
+        gradient_accumulation_steps=8,  # Compenser avec plus d'accumulation
+        fp16=True,  # Forcer mixed precision
         dataloader_pin_memory=False,
-        remove_unused_columns=False,
-        max_steps=50,
-        fp16=torch.cuda.is_available(),  # Use mixed precision if GPU available
+        dataloader_num_workers=0,  # Éviter le multiprocessing
+        gradient_checkpointing=True,  # Économiser la mémoire
+        no_cuda=True,  # Forcer CPU
     )
 
     # Create trainer
@@ -204,7 +190,7 @@ def fine_tune_xglm(
         args=training_args,
         data_collator=data_collator,
         train_dataset=train_dataset,
-        eval_dataset=val_dataset,
+        eval_dataset=val_dataset
     )
 
     # Start training
@@ -212,7 +198,7 @@ def fine_tune_xglm(
     train_result = trainer.train()
 
     # Save final model
-    trainer.save_model()
+    trainer.save_model(output_dir)
     tokenizer.save_pretrained(output_dir)
 
     # Save training metrics
@@ -255,10 +241,10 @@ if __name__ == "__main__":
             corpus_path=corpus_path,
             output_dir=output_dir,
             model_name="facebook/xglm-564M",
-            max_length=512,
-            stride=256,
+            max_length=128,
+            stride=64,
             batch_size=2,
             gradient_accumulation_steps=8,
-            learning_rate=5e-5,
+            learning_rate=1e-4,
             num_epochs=3
         )

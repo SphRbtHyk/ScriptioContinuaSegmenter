@@ -34,7 +34,8 @@ class Segmenter:
         result = []
         for char, label in zip(text, labels):
             result.append(char)
-            if label == "space" or label == 1:
+            if label == "space" or label == 1 or label == 3\
+                    or label == "single" or label == "end":
                 result.append(" ")
         return "".join(result).strip()
 

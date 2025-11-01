@@ -1,100 +1,136 @@
-"""Run the benchmarking process.
+#!/usr/bin/env python3
+"""Run the benchmarking process for specific parameters."""
 
-For each of the verse of the dataset, compute the accuracy, precision and
-recall of the approach.
-"""
-import time
+import argparse
 import random
 import pathlib
 import json
 import pandas as pd
-from sc_segmenter.segmenters.word_transformer_segmenter\
-    import ClassificationSegmenter
-from sc_segmenter.segmenters.hierarchical_segmenter\
-    import HierarchicalSegmenter
-from sc_segmenter.segmenters.bayesian_segmenter\
-    import BayesianSegmenter
+from loguru import logger
+from tqdm import tqdm
+from sc_segmenter.segmenters.word_transformer_segmenter import ClassificationSegmenter
+from sc_segmenter.segmenters.hierarchical_segmenter import HierarchicalSegmenter
+from sc_segmenter.segmenters.bayesian_segmenter import BayesianSegmenter
 
-ALGORITHM_TESTED = "BAYESIAN"
-# ALGORITHM_TESTED = "HIERARCHICAL"
-# ALGORITHM_TESTED = "STANDARD"
-# LANGUAGE = "lat"
 
-for LANGUAGE in ["grc", "lat", "seals"]:
-    "======== PARAMETERS OF BENCHMARKS ========"
+def parse_arguments():
+    parser = argparse.ArgumentParser(description="Run segmentation benchmark")
+    parser.add_argument("--language", type=str, required=True,
+                        choices=["grc", "lat", "seals"])
+    parser.add_argument("--algorithm", type=str, required=True,
+                        choices=["STANDARD", "HIERARCHICAL", "BAYESIAN"])
+    parser.add_argument("--annotation", type=str,
+                        choices=["binary", "quadri"], default="binary")
+    parser.add_argument("--beam_width", type=int, default=1)
+    return parser.parse_args()
+
+
+def main():
+    args = parse_arguments()
+
+    logger.info(
+        f"Starting benchmark: {args.language}, {args.algorithm}, {args.annotation}, beam_width={args.beam_width}")
+
     FILE_PATH = pathlib.Path(__file__).parent.resolve()
-    MODEL_PATH = f"{FILE_PATH}/../train/model/"\
-        f"{LANGUAGE}_character-classifier-final"
-    AR_MODEL = f"{FILE_PATH}/../train/model/"\
-        f"{LANGUAGE}_xglm-564M-finetuned"
+    MODEL_PATH = f"{FILE_PATH}/../train/model/{args.language}_character-classifier-{args.annotation}-final"
+    AR_MODEL = f"{FILE_PATH}/../train/model/{args.language}_xglm-564M-finetuned"
     TRAINING_FILE = {
         "lat": f"{FILE_PATH}/../train/data/ground_truth/vulgata_binary.txt",
-        "grc": f"{FILE_PATH}/../train/data/ground_truth/sblgnt_binary.txt"
+        "grc": f"{FILE_PATH}/../train/data/ground_truth/sblgnt_binary.txt",
+        "seals": f"{FILE_PATH}/../train/data/ground_truth/seals_binary.txt",
     }
-    "========"
 
-    with open(f"{FILE_PATH}/test_datasets/{LANGUAGE}/ms.json") as f:
+    with open(f"{FILE_PATH}/test_datasets/{args.language}/ms.json") as f:
         benchmark_dataset = json.load(f)
 
     scores = []
     segmentations = []
 
-    if ALGORITHM_TESTED == "STANDARD":
+    # Initialize segmenter based on algorithm
+    if args.algorithm == "STANDARD":
         segmenter = ClassificationSegmenter(MODEL_PATH)
-    elif ALGORITHM_TESTED == "HIERARCHICAL":
+    elif args.algorithm == "HIERARCHICAL":
         segmenter = HierarchicalSegmenter(
             autoregressive_model_path=AR_MODEL,
             character_model_path=MODEL_PATH,
-            beam_width=10)
-    elif ALGORITHM_TESTED == "BAYESIAN":
+            beam_width=args.beam_width
+        )
+    elif args.algorithm == "BAYESIAN":
         segmenter = BayesianSegmenter()
-        # Need to perform the training "online"
-        with open(TRAINING_FILE[LANGUAGE]) as f:
-            train_ds = [
-                line.split("-")[0].strip() for line in
-                f.readlines()
-            ]
-
+        with open(TRAINING_FILE[args.language]) as f:
+            train_ds = [line.split("-")[0].strip() for line in f.readlines()]
         random.shuffle(train_ds)
         split_idx = int(0.8 * len(train_ds))
-        train_x = train_ds[:split_idx]
-        dev_x = train_ds[split_idx:]
-        print("---training bayesian segmenter")
-        start = time.time()
-        segmenter.train(train_x=train_x,
-                        dev_x=dev_x)
-        end = time.time()
-        print(f"--- TRAINING TIME BAYESIAN {LANGUAGE}: {end - start}")
+        logger.info("Training Bayesian segmenter...")
+        segmenter.train(
+            train_x=train_ds[:split_idx], dev_x=train_ds[split_idx:])
 
-    ix = 0
-
+    # Count total number of verses for progress bar
+    total_verses = 0
     for ms, ms_content in benchmark_dataset.items():
         for chapter, chapter_content in ms_content.items():
-            for verse, verse_content in chapter_content.items():
-                # if ix < 2:
-                try:
-                    segmented = segmenter.compute_scores(
-                        text=verse_content.replace(" ", ""),
-                        ground_truth=verse_content.split()
-                    )
-                    scores.append(segmented)
-                    segmentations.append((segmenter.segment(
-                        text=verse_content.replace(" ", "")),
-                        verse_content)
-                    )
-                    ix += 1
-                    print(f"--- Benchmarking iteration {ix}")
-                except Exception:
-                    continue
-                # else:
-                #     break
+            total_verses += len(chapter_content)
 
-    # Dump to csv
-    scores_df = pd.DataFrame(scores).mean()
-    scores_df.to_csv(f"results/{LANGUAGE}_{ALGORITHM_TESTED}.csv")
-    print(f"Total scores: {scores_df}")
+    logger.info(f"Processing {total_verses} verses...")
 
-    # Write down segmentations
-    with open(f"results/{LANGUAGE}_{ALGORITHM_TESTED}_segments.txt", "w") as f:
-        for line in segmentations:
-            f.write(f"{line}\n")
+    # Process all verses with progress bar
+    ix = 0
+    errors = 0
+
+    # Create progress bar
+    with tqdm(total=total_verses, desc=f"{args.algorithm} {args.language}", unit="verse") as pbar:
+        for ms, ms_content in benchmark_dataset.items():
+            for chapter, chapter_content in ms_content.items():
+                for verse, verse_content in chapter_content.items():
+                    try:
+                        segmented = segmenter.compute_scores(
+                            text=verse_content.replace(" ", ""),
+                            ground_truth=verse_content.split()
+                        )
+                        scores.append(segmented)
+                        segmentations.append((
+                            segmenter.segment(
+                                text=verse_content.replace(" ", "")),
+                            verse_content
+                        ))
+                        ix += 1
+
+                        # Update progress bar every verse
+                        pbar.update(1)
+                        pbar.set_postfix({
+                            'processed': ix,
+                            'errors': errors,
+                            'current': f"{ms}/{chapter}/{verse}"
+                        })
+
+                    except Exception as e:
+                        errors += 1
+                        logger.error(f"Problem at {ms}/{chapter}/{verse}: {e}")
+                        pbar.set_postfix({
+                            'processed': ix,
+                            'errors': errors,
+                            'current': f"ERROR:{ms}/{chapter}/{verse}"
+                        })
+                        continue
+
+    # Save results
+    logger.info(f"Completed: {ix} verses processed, {errors} errors")
+
+    if scores:  # Only save if we have results
+        scores_df = pd.DataFrame(scores).mean()
+        output_file = f"results/{args.language}_{args.annotation}_{args.algorithm}_{args.beam_width}.csv"
+        scores_df.to_csv(output_file)
+        logger.info(f"Results saved to {output_file}")
+        logger.info(f"Total scores: {scores_df}")
+
+        # Save segmentations
+        with open(f"results/{args.language}_{args.algorithm}_{args.annotation}_{args.beam_width}_segments.txt", "w") as f:
+            for line in segmentations:
+                f.write(f"{line}\n")
+        logger.info(f"Segmentations saved for {len(segmentations)} verses")
+    else:
+        logger.error("No successful segmentations to save!")
+
+
+if __name__ == "__main__":
+    main()

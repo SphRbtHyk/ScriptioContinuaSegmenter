@@ -4,6 +4,7 @@ import torch
 from transformers import AutoTokenizer, CanineForTokenClassification, Trainer, TrainingArguments
 from torch.utils.data import Dataset
 from typing import List, Tuple
+from transformers import EarlyStoppingCallback
 
 
 def map_labels_binary(list_labels: list[str]) -> list[int]:
@@ -178,7 +179,7 @@ def train(LANGUAGE,
 
         # ===== TRAINING DURATION =====
         num_train_epochs=10,  # Increased from 3 to 10 for more thorough training
-        max_steps=20000,  # Set a high maximum steps limit
+        max_steps=10000,  # Set a high maximum steps limit
 
         # ===== BATCH CONFIGURATION =====
         per_device_train_batch_size=8,
@@ -301,6 +302,12 @@ def train(LANGUAGE,
         args=training_args,
         train_dataset=train_dataset,
         eval_dataset=val_dataset,
+
+        callbacks=[EarlyStoppingCallback(
+            # Stop after 750 steps (3 × 250) without improvement
+            early_stopping_patience=3,
+            early_stopping_threshold=0.001
+        )]
     )
 
     # Start training
@@ -334,4 +341,4 @@ if __name__ == "__main__":
         trained_model, trained_tokenizer = train(lang)
         end_time = time()
         print(f"Total required time for training {end_time-start_time}"
-              f"language {lang}")
+              f" language {lang}")
