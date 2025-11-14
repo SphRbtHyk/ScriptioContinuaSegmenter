@@ -1,3 +1,5 @@
+![logo](https://raw.githubusercontent.com/SphRbtHyk/ScriptioContinuaSegmenter/refs/heads/main/logo/logo.png)
+
 # Hierarchical transformers for the segmentation of Greek and Latin texts
 
 This repository implements a powerful two-stage text segmentation system that combines **character-level classification** with **linguistic validation** to deliver highly accurate segmentation of texts written in Scriptio Continua.
