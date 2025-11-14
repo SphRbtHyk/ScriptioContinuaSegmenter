@@ -1,4 +1,4 @@
-![logo](https://raw.githubusercontent.com/SphRbtHyk/ScriptioContinuaSegmenter/refs/heads/main/logo/logo.png)
+<img src="https://raw.githubusercontent.com/SphRbtHyk/ScriptioContinuaSegmenter/refs/heads/main/logo/logo.png" width="400">
 
 # Hierarchical transformers for the segmentation of Greek and Latin texts
 
@@ -6,12 +6,10 @@ This repository implements a powerful two-stage text segmentation system that co
 
 ## Overview 🧐
 
-Segmenting ancient, noisy, or unsegmented text presents unique challenges. Traditional approaches often rely solely on classification models, which can produce linguistically incoherent results. Our **HierarchicalSegmenter** solves this by implementing a two-stage process:
+Segmenting texts written in Scriptio Continua, *i.e* texts written without clear spaces between words, presents unique challenges. Traditional approaches often rely solely on classification models or Bayesian language models, which can produce linguistically incoherent results. Our **HierarchicalSegmenter** solves this by implementing a two-stage process:
 
 1. 🎯 **Character-Level Classification**: Uses beam search to identify the top-k most probable segmentation points
 2. 🧠 **Linguistic Validation**: Employs transformer perplexity scoring to select the most coherent segmentation
-
-This approach is designed for ancient manuscripts, historical documents, and texts without clear word boundaries. 📜
 
 ## Installation ⚡
 
@@ -61,7 +59,7 @@ print(f"Segmented: {result}")
 
 ## Publication 📚
 
-This work is currently under-review for the IJDAR journal, under the name.
+This work is currently under-review for the IJDAR journal, under the title:
 *Word Segmentation using Self-Supervised Hierarchical Transformers for Scriptio Continua in Greek and Latin*
 
 To reproduce the results of the paper (be ready, it can take a few hours!), please first install the package, and then run:
