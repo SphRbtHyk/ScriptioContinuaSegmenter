@@ -32,10 +32,9 @@ wait_for_jobs() {
 }
 
 # Run all combinations in parallel (STANDARD and HIERARCHICAL only)
-languages=("seals")
-# algorithms=("STANDARD" "HIERARCHICAL")
-# algorithms=("HIERARCHICAL")
-# annotations=("binary" "quadri")
+# languages=("seals")
+languages=("grc" "lat") # Seals are absent due to copyrights
+algorithms=("STANDARD" "HIERARCHICAL")
 annotations=("binary" "quadri")
 
 
@@ -68,7 +67,7 @@ echo "STANDARD and HIERARCHICAL completed!"
 # Reset counter for Bayesian
 current_jobs=0
 
-languages=("seals")
+languages=("lat" "grc") # Seals are absent due to copyrights
 
 Now run BAYESIAN separately
 echo "=== Running BAYESIAN algorithm ==="

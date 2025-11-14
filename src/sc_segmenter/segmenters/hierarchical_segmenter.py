@@ -63,7 +63,8 @@ class HierarchicalSegmenter(Segmenter):
 
     def beam_search_decode(self,
                            input_ids: torch.Tensor,
-                           attention_mask: torch.Tensor) -> list[dict[str, Any]]:
+                           attention_mask: torch.Tensor)\
+            -> list[dict[str, Any]]:
         """
         Perform beam search to find the top-k most likely sequences.
 
@@ -189,31 +190,3 @@ class HierarchicalSegmenter(Segmenter):
         """Perform segmentation of an input text.
         """
         return self.select_best_beam(text=text).split()
-
-
-if __name__ == "__main__":
-    print("=== HierarchicalSegmenter Sanity Test ===")
-
-    # Initialize segmenter
-    segmenter = HierarchicalSegmenter(
-        autoregressive_model_path="../../../scripts/train/model/"
-        "grc_xglm-564M-finetuned",
-        character_model_path="../../../scripts/train/model/"
-        "grc_character-classifier-final",
-        beam_width=20
-    )
-
-    # Test sentences
-    test_sentences = [
-        "ηνδεηειδεααυτουωςαστραπηκαιτοενδυμααυτουλευκονωςχιων"
-    ]
-
-    for i, sentence in enumerate(test_sentences, 1):
-        print(f"\n--- Test {i} ---")
-        print(f"Input: '{sentence}'")
-
-        # try:
-        result = segmenter.segment(sentence)
-        print(f"✅ Result: '{result}'")
-        # except Exception as e:
-        #     print(f"❌ Failed: {e}")

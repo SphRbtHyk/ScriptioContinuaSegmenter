@@ -57,15 +57,26 @@ print(f"Segmented: {result}")
 - The segmentation with the lowest perplexity is selected as the final output
 
 
-## Citation 📚
+## Publication 📚
 
+This work is currently under-review for the IJDAR journal, under the name.
 *Word Segmentation using Self-Supervised Hierarchical Transformers for Scriptio Continua in Greek and Latin*
 
-To reproduce the results of the paper (be ready, it can take a few hours!), please run after installing our package:
+To reproduce the results of the paper (be ready, it can take a few hours!), please first install the package, and then run:
 
 ```shell
-benchmark
+cd scripts/benchmark
+benchmark.sh
 ```
+
+(make sure the script is executable first! You may need to run `chmod +x benchmark.sh`)
+
+We have additionally included in this repository for full transparency:
+1. The results displayed in the paper in csv format (see `scripts/benchmark/results`)
+2. The logs of our tests (see `scripts/benchmark/results`)
+3. The training scripts for the models (see `scripts/train/train_*`)
+
+All of our models have been uploaded on [HuggingFace](https://huggingface.co/SphRbtHyk).
 
 ## License
 

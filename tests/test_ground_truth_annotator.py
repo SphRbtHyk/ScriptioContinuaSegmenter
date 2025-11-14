@@ -43,13 +43,16 @@ class TestAnnotator(unittest.TestCase):
             annotate_dict(test_data, annotation_scheme="binary"),
             [('ceciestuntest',
               ['I', 'I', 'I', 'E', 'I', 'I', 'E',
-               'I', 'E', 'I', 'I', 'I', 'E']),
+               'I', 'E', 'I', 'I', 'I', 'E'],
+              "ceci est un test"),
              ('testaussi',
               ['I', 'I', 'I', 'E', 'I',
-               'I', 'I', 'I', 'E']),
+               'I', 'I', 'I', 'E'],
+              "test aussi"),
              ('ceciestuntest',
               ['I', 'I', 'I', 'E', 'I', 'I', 'E',
-               'I', 'E', 'I', 'I', 'I', 'E'])]
+               'I', 'E', 'I', 'I', 'I', 'E'],
+              "ceci est un test")]
         )
 
     def test_annotate_dict_quadri(self):
@@ -69,13 +72,16 @@ class TestAnnotator(unittest.TestCase):
                           annotation_scheme="quadrimodal"),
             [('ceciestuntest',
               ['B', 'I', 'I', 'E', 'B', 'I', 'E',
-               'B', 'E', 'B', 'I', 'I', 'E']),
+               'B', 'E', 'B', 'I', 'I', 'E'],
+              "ceci est un test"),
              ('testaussi',
               ['B', 'I', 'I', 'E', 'B',
-               'I', 'I', 'I', 'E']),
+               'I', 'I', 'I', 'E'],
+              "test aussi"),
              ('ceciestuntest',
               ['B', 'I', 'I', 'E', 'B', 'I',
-               'E', 'B', 'E', 'B', 'I', 'I', 'E'])]
+               'E', 'B', 'E', 'B', 'I', 'I', 'E'],
+              "ceci est un test")]
         )
 
     def test_annotate_dict_unknown(self):

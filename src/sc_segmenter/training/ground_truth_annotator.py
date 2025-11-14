@@ -64,9 +64,9 @@ def annotate_dict(input_dict: dict[str, dict[str, dict[str, str]]],
             of the form book_name/chap/verse.
 
     Returns:
-        list[tuple[str, list[str]]]: The list of the strings and their
-            annotations as a list of tuple. The spaces will be removed
-            as they are indicated in the label.
+        list[tuple[str, list[str]]]: The list of the strings, their
+            annotations as a list of tuple and the corresponding ground truth.
+            The spaces will be removed as they are indicated in the label.
     """
     if annotation_scheme == "binary":
         annotation_fun = binary_annotation
