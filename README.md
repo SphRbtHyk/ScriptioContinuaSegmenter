@@ -59,7 +59,13 @@ print(f"Segmented: {result}")
 
 ## Citation 📚
 
-PAPER UNDER REVIEW
+*Word Segmentation using Self-Supervised Hierarchical Transformers for Scriptio Continua in Greek and Latin*
+
+To reproduce the results of the paper (be ready, it can take a few hours!), please run after installing our package:
+
+```shell
+benchmark
+```
 
 ## License
 

@@ -12,13 +12,17 @@ packages = [
 
 [tool.hatch.build]
 include = [
-  "data/**"
+  "scripts/**"
 ]
 
 [project]
 name = "SC_segmenter"
 version = "1.0.0"
 dependencies = [
+  "loguru==0.7.3",
+  "pandas==2.3.3",
+  "nhpylm==0.0.1.1",
+  "transformers==4.57.1"
 ]
 requires-python = ">=3.11"
 maintainers = [
@@ -37,5 +41,5 @@ dev = [
   "pytest>=8.3.5"
 ]
 
-[project.scripts]
-
+[tool.setuptools]
+benchmark = ["scripts/benchmark/compute_scores.py"]

@@ -32,11 +32,11 @@ wait_for_jobs() {
 }
 
 # Run all combinations in parallel (STANDARD and HIERARCHICAL only)
-languages=("grc")
+languages=("seals")
 # algorithms=("STANDARD" "HIERARCHICAL")
-algorithms=("HIERARCHICAL")
+# algorithms=("HIERARCHICAL")
 # annotations=("binary" "quadri")
-annotations=("quadri")
+annotations=("binary" "quadri")
 
 
 echo "=== Running STANDARD and HIERARCHICAL algorithms ==="
@@ -49,7 +49,8 @@ for lang in "${languages[@]}"; do
                 run_benchmark "$lang" "$algo" "$ann" 1 &
                 current_jobs=$((current_jobs + 1))
             elif [ "$algo" = "HIERARCHICAL" ]; then
-                for beam in 3 10 15; do
+                # for beam in 3 10 15; do
+                for beam in 15; do
                     wait_for_jobs
                     run_benchmark "$lang" "$algo" "$ann" "$beam" &
                     current_jobs=$((current_jobs + 1))
@@ -67,15 +68,17 @@ echo "STANDARD and HIERARCHICAL completed!"
 # Reset counter for Bayesian
 current_jobs=0
 
-# Now run BAYESIAN separately
-# echo "=== Running BAYESIAN algorithm ==="
-# for lang in "${languages[@]}"; do
-#     wait_for_jobs
-#     run_benchmark "$lang" "BAYESIAN" "binary" 1 &
-#     current_jobs=$((current_jobs + 1))
-# done
+languages=("seals")
 
-# # Wait for Bayesian to complete
-# echo "Waiting for $current_jobs BAYESIAN jobs to complete..."
+Now run BAYESIAN separately
+echo "=== Running BAYESIAN algorithm ==="
+for lang in "${languages[@]}"; do
+    wait_for_jobs
+    run_benchmark "$lang" "BAYESIAN" "binary" 1 &
+    current_jobs=$((current_jobs + 1))
+done
+
+Wait for Bayesian to complete
+echo "Waiting for $current_jobs BAYESIAN jobs to complete..."
 wait
 echo "All jobs completed!"

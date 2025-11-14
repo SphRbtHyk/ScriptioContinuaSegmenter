@@ -13,6 +13,22 @@ from sc_segmenter.segmenters.hierarchical_segmenter import HierarchicalSegmenter
 from sc_segmenter.segmenters.bayesian_segmenter import BayesianSegmenter
 
 
+def unpack_dict(input_dict):
+    """Unpack nested dicts that contain the ground truth/
+    test datasets."""
+    content_training_file = []
+    for _, book_content in input_dict.items():
+        for _, chapter_content in book_content.items():
+            for _, verse_content in chapter_content.items():
+                if verse_content.replace(" ", ""):
+                    content_training_file.append(verse_content.replace(" ", ""))
+
+    # Debug info
+    logger.info(f"Unpacked {len(content_training_file)} training examples")
+
+    return content_training_file
+
+
 def parse_arguments():
     parser = argparse.ArgumentParser(description="Run segmentation benchmark")
     parser.add_argument("--language", type=str, required=True,
@@ -23,6 +39,9 @@ def parse_arguments():
                         choices=["binary", "quadri"], default="binary")
     parser.add_argument("--beam_width", type=int, default=1)
     return parser.parse_args()
+
+
+TRAIN_ON_REAL_DATA = True
 
 
 def main():
@@ -57,13 +76,18 @@ def main():
         )
     elif args.algorithm == "BAYESIAN":
         segmenter = BayesianSegmenter()
-        with open(TRAINING_FILE[args.language]) as f:
-            train_ds = [line.split("-")[0].strip() for line in f.readlines()]
+        if TRAIN_ON_REAL_DATA:
+            train_ds = unpack_dict(benchmark_dataset)
+        else:
+            with open(TRAINING_FILE[args.language]) as f:
+                train_ds = [line.split("-")[0].strip() for line in f.readlines()]
         random.shuffle(train_ds)
         split_idx = int(0.8 * len(train_ds))
+
         logger.info("Training Bayesian segmenter...")
         segmenter.train(
-            train_x=train_ds[:split_idx], dev_x=train_ds[split_idx:])
+            train_x=train_ds[:split_idx],
+            dev_x=train_ds[split_idx:])
 
     # Count total number of verses for progress bar
     total_verses = 0
@@ -77,7 +101,6 @@ def main():
     ix = 0
     errors = 0
 
-    # Create progress bar
     with tqdm(total=total_verses, desc=f"{args.algorithm} {args.language}", unit="verse") as pbar:
         for ms, ms_content in benchmark_dataset.items():
             for chapter, chapter_content in ms_content.items():
