@@ -51,8 +51,8 @@ def main():
         f"Starting benchmark: {args.language}, {args.algorithm}, {args.annotation}, beam_width={args.beam_width}")
 
     FILE_PATH = pathlib.Path(__file__).parent.resolve()
-    MODEL_PATH = f"{FILE_PATH}/../train/model/{args.language}_character-classifier-{args.annotation}-final"
-    AR_MODEL = f"{FILE_PATH}/../train/model/{args.language}_xglm-564M-finetuned"
+    MODEL_PATH = f"SphRbtHyk/{args.language}_character-classifier-{args.annotation}-final"
+    AR_MODEL = f"SphRbtHyk/{args.language}_xglm-564M-finetuned"
     TRAINING_FILE = {
         "lat": f"{FILE_PATH}/../train/data/ground_truth/vulgata_binary.txt",
         "grc": f"{FILE_PATH}/../train/data/ground_truth/sblgnt_binary.txt",
