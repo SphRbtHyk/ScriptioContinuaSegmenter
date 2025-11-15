@@ -1,3 +1,5 @@
+[![Unittests and lint](https://github.com/SphRbtHyk/ScriptioContinuaSegmenter/actions/workflows/ci_cd.yaml/badge.svg)](https://github.com/SphRbtHyk/ScriptioContinuaSegmenter/actions/workflows/ci_cd.yaml)
+
 <img src="https://raw.githubusercontent.com/SphRbtHyk/ScriptioContinuaSegmenter/refs/heads/main/logo/logo.png" width="400">
 
 # Hierarchical transformers for the segmentation of Greek and Latin texts
